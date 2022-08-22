@@ -134,7 +134,9 @@ impl Contract {
             approved_minters,
             approved_creators,
             series_by_id: UnorderedMap::new(StorageKey::SeriesById.try_to_vec().unwrap()),
-            series_id_by_mint_id: LookupMap::new(StorageKey::SeriesIdByMintId.try_to_vec().unwrap()),
+            series_id_by_mint_id: LookupMap::new(
+                StorageKey::SeriesIdByMintId.try_to_vec().unwrap(),
+            ),
             //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
             tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
             tokens_by_id: UnorderedMap::new(StorageKey::TokensById.try_to_vec().unwrap()),

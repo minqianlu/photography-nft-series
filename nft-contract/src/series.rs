@@ -30,7 +30,10 @@ impl Contract {
             self.series_id_by_mint_id
                 .insert(&final_mint_id, &series_id)
                 .is_none(),
-            &format!("mint_id {} already exists and points to {}", &final_mint_id, &series_id)
+            &format!(
+                "mint_id {} already exists and points to {}",
+                &final_mint_id, &series_id
+            )
         );
 
         require!(
@@ -44,10 +47,7 @@ impl Contract {
                         royalty,
                         tokens: UnorderedSet::new(StorageKey::SeriesByIdInner {
                             // We get a new unique prefix for the collection
-                            account_id_hash: hash_account_id(&format!(
-                                "{}{}",
-                                series_id, caller
-                            )),
+                            account_id_hash: hash_account_id(&format!("{}{}", series_id, caller)),
                         }),
                         owner_id: caller
                     }
@@ -65,7 +65,6 @@ impl Contract {
 
     #[payable]
     pub fn nft_mint(&mut self, mint_id: U64, receiver_id: AccountId, injected_fields: U64) {
-
         assert!(injected_fields.0 == 3, "malicious injected fields detected");
 
         //measure the initial storage being used on the contract
@@ -77,7 +76,10 @@ impl Contract {
             "Not approved minter"
         );
 
-        let series_id = self.series_id_by_mint_id.get(&mint_id.0).expect("No mint_id record found");
+        let series_id = self
+            .series_id_by_mint_id
+            .get(&mint_id.0)
+            .expect("No mint_id record found");
         let mut series = self.series_by_id.get(&series_id).expect("Not a series");
         let cur_len = series.tokens.len();
         // Ensure we haven't overflowed on the number of copies minted
@@ -142,15 +144,14 @@ impl Contract {
 
     #[payable]
     /// Update the series ID for a given series. Caller must be series owner.
-    pub fn update_mint_id(
-        &mut self,
-        old_mint_id: u64,
-        new_mint_id: u64,
-    ) {
+    pub fn update_mint_id(&mut self, old_mint_id: u64, new_mint_id: u64) {
         let caller = env::predecessor_account_id();
         // Ensure the caller is the owner of the current series
-        
-        let series_id = self.series_id_by_mint_id.remove(&old_mint_id).expect("mint_id record not found");
+
+        let series_id = self
+            .series_id_by_mint_id
+            .remove(&old_mint_id)
+            .expect("mint_id record not found");
         let mut series = self.series_by_id.get(&series_id).expect("Not a series");
         require!(
             series.owner_id == caller,
@@ -162,7 +163,10 @@ impl Contract {
             self.series_id_by_mint_id
                 .insert(&new_mint_id, &series_id)
                 .is_none(),
-            &format!("mint_id {} already exists and points to {}", &new_mint_id, &series_id)
+            &format!(
+                "mint_id {} already exists and points to {}",
+                &new_mint_id, &series_id
+            )
         );
 
         series.mint_id = new_mint_id;

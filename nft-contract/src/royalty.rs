@@ -42,9 +42,7 @@ impl NonFungibleTokenCore for Contract {
         if royalty_option.is_none() {
             let mut payout = HashMap::new();
             payout.insert(owner_id, balance);
-            return Payout {
-                payout: payout
-            };
+            return Payout { payout: payout };
         }
         let royalty = royalty_option.unwrap();
 
@@ -123,9 +121,7 @@ impl NonFungibleTokenCore for Contract {
         if royalty_option.is_none() {
             let mut payout = HashMap::new();
             payout.insert(owner_id, balance);
-            return Payout {
-                payout: payout
-            };
+            return Payout { payout: payout };
         }
         let royalty = royalty_option.unwrap();
 
