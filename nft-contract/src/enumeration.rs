@@ -113,13 +113,14 @@ impl Contract {
     }
 
     // get info for a specific series
-    pub fn get_series_info(&self, id: u64) -> Option<JsonSeries> {
-        //get the series from the map
-        let series = self.series_by_id.get(&id);
-        //if there is some series, we'll return the series
-        if let Some(series) = series {
+    pub fn get_series_info(&self, mint_id: u64) -> Option<JsonSeries> {
+        // Get the series ID
+        let series_id = self.series_id_by_mint_id.get(&mint_id);
+
+        // If there was some series, return the series info
+        if let Some(series) = series_id.and_then(|id| self.series_by_id.get(&id)) {
             Some(JsonSeries {
-                series_id: id,
+                series_id: series_id.unwrap(),
                 mint_id: series.mint_id,
                 metadata: series.metadata,
                 royalty: series.royalty,
