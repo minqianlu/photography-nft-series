@@ -115,14 +115,14 @@ impl Contract {
     pub fn get_series_info(
         &self,
         mint_id: Option<u64>,
-        series_id: Option<u64>
+        series_id: Option<u64>,
     ) -> Option<JsonSeries> {
         // If a series ID was passed in, use that. Otherwise, get the series ID from the mint ID.
-        let actual_id = series_id.unwrap_or_else( ||
+        let actual_id = series_id.unwrap_or_else(|| {
             self.series_id_by_mint_id
                 .get(&mint_id.expect("No mint ID or series ID passed in"))
-                .expect("No series ID found for mint ID"),
-        );
+                .expect("No series ID found for mint ID")
+        });
 
         // If there was some series, return the series info
         if let Some(series) = self.series_by_id.get(&actual_id) {
@@ -140,9 +140,15 @@ impl Contract {
     }
 
     //get the total supply of NFTs for a given owner
-    pub fn nft_supply_for_series(&self, id: u64) -> U128 {
-        //get the series
-        let series = self.series_by_id.get(&id);
+    pub fn nft_supply_for_series(&self, mint_id: Option<u64>, series_id: Option<u64>) -> U128 {
+        // If a series ID was passed in, use that. Otherwise, get the series ID from the mint ID.
+        let actual_id = series_id.unwrap_or_else(|| {
+            self.series_id_by_mint_id
+                .get(&mint_id.expect("No mint ID or series ID passed in"))
+                .expect("No series ID found for mint ID")
+        });
+
+        let series = self.series_by_id.get(&actual_id);
 
         //if there is some series, get the length of the tokens. Otherwise return -
         if let Some(series) = series {
@@ -155,11 +161,20 @@ impl Contract {
     //Query for all the tokens for an owner
     pub fn nft_tokens_for_series(
         &self,
-        id: u64,
+        mint_id: Option<u64>,
+        series_id: Option<u64>,
         from_index: Option<U128>,
         limit: Option<u64>,
     ) -> Vec<JsonToken> {
-        let series = self.series_by_id.get(&id);
+        // If a series ID was passed in, use that. Otherwise, get the series ID from the mint ID.
+        let actual_id = series_id.unwrap_or_else(|| {
+            self.series_id_by_mint_id
+                .get(&mint_id.expect("No mint ID or series ID passed in"))
+                .expect("No series ID found for mint ID")
+        });
+
+        let series = self.series_by_id.get(&actual_id);
+        
         let tokens = if let Some(series) = series {
             series.tokens
         } else {
