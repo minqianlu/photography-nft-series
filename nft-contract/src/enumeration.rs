@@ -1,6 +1,5 @@
-use crate::*;
 use crate::nft_core::NonFungibleTokenCore;
-
+use crate::*;
 
 /// Struct to return in views to query for specific data related to an access key.
 #[derive(BorshDeserialize, BorshSerialize, Serialize)]
@@ -107,19 +106,28 @@ impl Contract {
             //take the first "limit" elements in the vector. If we didn't specify a limit, use 50
             .take(limit.unwrap_or(50) as usize)
             //we'll map the series IDs which are strings into Json Series
-            .map(|series_id| self.get_series_info(series_id.clone()).unwrap())
+            .map(|series_id| self.get_series_info(None, Some(series_id.clone())).unwrap())
             //since we turned the keys into an iterator, we need to turn it back into a vector to return
             .collect()
     }
 
     // get info for a specific series
-    pub fn get_series_info(&self, id: u64) -> Option<JsonSeries> {
-        //get the series from the map
-        let series = self.series_by_id.get(&id);
-        //if there is some series, we'll return the series
-        if let Some(series) = series {
+    pub fn get_series_info(
+        &self,
+        mint_id: Option<u64>,
+        series_id: Option<u64>
+    ) -> Option<JsonSeries> {
+        // If a series ID was passed in, use that. Otherwise, get the series ID from the mint ID.
+        let actual_id = series_id.unwrap_or_else( ||
+            self.series_id_by_mint_id
+                .get(&mint_id.expect("No mint ID or series ID passed in"))
+                .expect("No series ID found for mint ID"),
+        );
+
+        // If there was some series, return the series info
+        if let Some(series) = self.series_by_id.get(&actual_id) {
             Some(JsonSeries {
-                series_id: id,
+                series_id: actual_id,
                 mint_id: series.mint_id,
                 metadata: series.metadata,
                 royalty: series.royalty,
