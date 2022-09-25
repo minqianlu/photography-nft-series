@@ -2,6 +2,15 @@ use near_sdk::json_types::U64;
 
 use crate::*;
 
+/// Injected Fields struct to be sent to external contracts
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub struct InjectedFields {
+    pub account_id_field: Option<String>,
+    pub drop_id_field: Option<String>,
+    pub key_id_field: Option<String>
+}
+
 #[near_bindgen]
 impl Contract {
     #[payable]
@@ -64,8 +73,10 @@ impl Contract {
     }
 
     #[payable]
-    pub fn nft_mint(&mut self, mint_id: U64, receiver_id: AccountId, injected_fields: U64) {
-        assert!(injected_fields.0 == 3, "malicious injected fields detected");
+    pub fn nft_mint(&mut self, mint_id: U64, receiver_id: AccountId, injected_fields: InjectedFields) {
+        // Ensure the injected fields are not malicious
+        require!(injected_fields.drop_id_field.unwrap() == "mint_id".to_string(), "malicious call. Injected fields don't match");
+        require!(injected_fields.account_id_field.unwrap() == "receiver_id".to_string(), "malicious call. Injected fields don't match");
 
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
