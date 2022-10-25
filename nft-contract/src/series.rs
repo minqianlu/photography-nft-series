@@ -2,10 +2,10 @@ use near_sdk::json_types::U64;
 
 use crate::*;
 
-/// Injected Fields struct to be sent to external contracts
+/// Injected Keypom Args struct to be sent to external contracts
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
-pub struct InjectedFields {
+pub struct KeypomArgs {
     pub account_id_field: Option<String>,
     pub drop_id_field: Option<String>,
     pub key_id_field: Option<String>
@@ -73,10 +73,10 @@ impl Contract {
     }
 
     #[payable]
-    pub fn nft_mint(&mut self, mint_id: U64, receiver_id: AccountId, injected_fields: InjectedFields) {
-        // Ensure the injected fields are not malicious
-        require!(injected_fields.drop_id_field.unwrap() == "mint_id".to_string(), "malicious call. Injected fields don't match");
-        require!(injected_fields.account_id_field.unwrap() == "receiver_id".to_string(), "malicious call. Injected fields don't match");
+    pub fn nft_mint(&mut self, mint_id: U64, receiver_id: AccountId, keypom_args: KeypomArgs) {
+        // Ensure the injected keypom args are not malicious
+        require!(keypom_args.drop_id_field.unwrap() == "mint_id".to_string(), "malicious call. Injected keypom args don't match");
+        require!(keypom_args.account_id_field.unwrap() == "receiver_id".to_string(), "malicious call. Injected keypom args don't match");
 
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
