@@ -24,10 +24,6 @@ impl Contract {
         let initial_storage_usage = env::storage_usage();
 
         let caller = env::predecessor_account_id();
-        require!(
-            self.approved_creators.contains(&caller) == true,
-            "only approved creators can add a type"
-        );
 
         let series_id: u64 = self.series_by_id.len() + 1;
         let mut final_mint_id = series_id;

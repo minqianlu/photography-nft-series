@@ -27,8 +27,4 @@ impl Contract {
         self.assert_contract_owner();
         self.approved_creators.remove(&account_id);
     }
-
-    pub fn is_approved_creator(&self, account_id: AccountId) -> bool {
-        self.approved_creators.contains(&account_id)
-    }
 }
