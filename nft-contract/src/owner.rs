@@ -17,6 +17,10 @@ impl Contract {
         self.approved_minters.contains(&account_id)
     }
 
+    pub fn is_approved_creator(&self, account_id: AccountId) -> bool {
+        self.approved_creators.contains(&account_id)
+    }
+
     /// approved creators
     pub fn add_approved_creator(&mut self, account_id: AccountId) {
         self.assert_contract_owner();

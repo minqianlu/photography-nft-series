@@ -24,6 +24,8 @@ impl Contract {
         let initial_storage_usage = env::storage_usage();
 
         let caller = env::predecessor_account_id();
+        // require caller to be a approved creator
+        require!(self.is_approved_creator(caller.clone()), "MUST BE APPROVED CREATOR TO ADD A SERIES");
 
         let series_id: u64 = self.series_by_id.len() + 1;
         let mut final_mint_id = series_id;
